@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UserManagement.Application.Dtos.Requests;
 
 namespace UserManagement.Application.Services
 {
     public interface UsersService
     {
-    }
-
-    public class UsersServiceImplementation
-    {
-
+        public Task Register(UserRegistrationRequestDto request);
     }
 }

@@ -1,7 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using UserManagement.Application.Repositories;
+using UserManagement.Application.Services;
+using UserManagement.Infrastructure.Configurations;
 using UserManagement.Infrastructure.DatabaseContext;
 using UserManagement.Infrastructure.Repositories;
+using UserManagement.Infrastructure.Services;
 
 namespace UserManagement.Infrastructure
 {
@@ -14,8 +18,15 @@ namespace UserManagement.Infrastructure
                 options.UseMySQL(connectionString);
             });
 
+            services.AddAutoMapper(config =>
+            {
+                config.AddProfile<UserManagementProfile>();
+            });
+
             services.AddScoped<UnitOfWork, UnitOfWorkImplementation>();
             services.AddScoped<UsersRepository, UsersRepositoryImplementation>();
+
+            services.AddScoped<UsersService, UsersServiceImplementation>();
             return services;
         }
     }

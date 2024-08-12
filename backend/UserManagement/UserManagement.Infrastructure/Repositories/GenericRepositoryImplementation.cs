@@ -2,22 +2,10 @@
 using UserManagement.Domain.Entities;
 using UserManagement.Infrastructure.DatabaseContext;
 using System.Linq.Expressions;
+using UserManagement.Application.Repositories;
 
 namespace UserManagement.Infrastructure.Repositories
 {
-    public interface GenericRepository<T> where T: BaseEntity
-    {
-        T Delete(T entity);
-        Task<T?> DeleteAsync(int id);
-        List<T> Get(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? ordering = null, string includedProperties = "");
-        Task<List<T>> GetAsync(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? ordering = null, string includedProperties = "");
-        T? GetById(int id);
-        Task<T?> GetByIdAsync(int id);
-        T Insert(T entity);
-        Task<T> InsertAsync(T entity);
-        T Update(T entity);
-    }
-
     public class GenericRepositoryImplementation<T> : GenericRepository<T> where T : BaseEntity
     {
         private ApplicationContext _context;

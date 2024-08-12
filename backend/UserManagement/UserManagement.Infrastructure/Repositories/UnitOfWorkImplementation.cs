@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UserManagement.Application.Repositories;
 using UserManagement.Infrastructure.DatabaseContext;
 
 namespace UserManagement.Infrastructure.Repositories
 {
-    public interface UnitOfWork
-    {
-        public int Save();
-        public Task<int> SaveAsync();
-        public UsersRepository UsersRepository { get; }
-    }
-
     public class UnitOfWorkImplementation : UnitOfWork
     {
         private readonly UsersRepository _usersRepository;
