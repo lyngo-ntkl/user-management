@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using UserManagement.Application.Dtos.Requests;
+using UserManagement.Application.Services;
 
 namespace UserManagement.API.Controllers
 {
@@ -6,5 +8,17 @@ namespace UserManagement.API.Controllers
     [Route("/api/v1/users")]
     public class UsersController
     {
+        private readonly UsersService _usersService;
+
+        public UsersController(UsersService usersService)
+        {
+            _usersService = usersService;
+        }
+
+        [HttpPost("registration")]
+        public async Task Register(UserRegistrationRequestDto request)
+        {
+            await _usersService.Register(request);
+        }
     }
 }
