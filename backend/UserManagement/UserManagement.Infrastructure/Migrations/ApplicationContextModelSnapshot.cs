@@ -26,15 +26,15 @@ namespace UserManagement.Infrastructure.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<byte[]>("PasswordHash")
+                    b.Property<string>("PasswordSalt")
                         .IsRequired()
-                        .HasColumnType("longblob");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("longblob");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
@@ -46,6 +46,9 @@ namespace UserManagement.Infrastructure.Migrations
                         .HasColumnType("varchar(500)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

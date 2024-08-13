@@ -27,5 +27,11 @@ namespace UserManagement.API.Controllers
         {
             return await _usersService.GetUsers(userName);
         }
+
+        [HttpPost("login")]
+        public async Task<AuthenticationResponseDto> Login(AuthenticationRequestDto request)
+        {
+            return await _usersService.Login(request);
+        }
     }
 }

@@ -3,9 +3,9 @@ using UserManagement.Application.Dtos.Requests;
 using UserManagement.Domain.Entities;
 using UserManagement.Domain.Enumerations;
 
-namespace UserManagement.Infrastructure.Configurations
+namespace UserManagement.Infrastructure.Common
 {
-    public class UserManagementProfile: Profile
+    public class UserManagementProfile : Profile
     {
         public UserManagementProfile()
         {

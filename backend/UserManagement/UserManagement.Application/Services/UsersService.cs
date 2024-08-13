@@ -7,5 +7,6 @@ namespace UserManagement.Application.Services
     {
         public Task Register(UserRegistrationRequestDto request);
         public Task<List<UserResponseDto>> GetUsers(string? userName);
+        public Task<AuthenticationResponseDto> Login(AuthenticationRequestDto request);
     }
 }
