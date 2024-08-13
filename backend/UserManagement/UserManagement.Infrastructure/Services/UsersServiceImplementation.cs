@@ -49,6 +49,7 @@ namespace UserManagement.Infrastructure.Services
         public async Task<List<UserResponseDto>> GetUsers(string? userName)
         {
             Expression expression = Expression.Constant(true);
+            var parameters = Expression.Parameter(typeof(User));
 
             if (userName != null)
             {
@@ -56,7 +57,7 @@ namespace UserManagement.Infrastructure.Services
                     expression,
                     Expression.Call(
                         Expression.Call(
-                            Expression.Property(Expression.Parameter(typeof(User)), nameof(User.UserName)),
+                            Expression.Property(parameters, nameof(User.UserName)),
                             typeof(string).GetMethod("ToLower", Type.EmptyTypes) ?? throw new InvalidOperationException("string.ToLower not found")
                         ),
                         typeof(string).GetMethod("Contains", new[] { typeof(string) }) ?? throw new InvalidOperationException("string.Contains not found"),
@@ -65,7 +66,7 @@ namespace UserManagement.Infrastructure.Services
                 );
             }
 
-            var users = await _unitOfWork.UsersRepository.GetAsync(Expression.Lambda<Func<User,bool>>(expression));
+            var users = await _unitOfWork.UsersRepository.GetAsync(Expression.Lambda<Func<User,bool>>(expression, parameters));
             return _mapper.Map<List<UserResponseDto>>(users);
         }
 

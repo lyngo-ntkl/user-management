@@ -2,5 +2,6 @@
 {
     public class UserResponseDto
     {
+        public string UserName { get; set; }
     }
 }
