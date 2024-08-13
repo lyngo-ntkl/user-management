@@ -24,6 +24,7 @@ namespace UserManagement.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<List<UserResponseDto>> GetUsers([FromQuery] string? userName)
         {
             return await _usersService.GetUsers(userName);
@@ -36,6 +37,7 @@ namespace UserManagement.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<UserResponseDto> GetUser([FromRoute] int id)
         {
             return await _usersService.GetUser(id);
@@ -46,6 +48,13 @@ namespace UserManagement.API.Controllers
         public async Task<UserPersonalResponseDto> GetUserPersonalInfo()
         {
             return await _usersService.GetUserPersonalInfo();
+        }
+
+        [HttpPut]
+        [Authorize]
+        public async Task<UserPersonalResponseDto> UpdateUser([FromBody] UserUpdatedRequestDto request)
+        {
+            return await _usersService.UpdateUser(request);
         }
     }
 }

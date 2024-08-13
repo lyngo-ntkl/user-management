@@ -10,5 +10,6 @@ namespace UserManagement.Application.Services
         Task<AuthenticationResponseDto> Login(AuthenticationRequestDto request);
         Task<UserResponseDto> GetUser(int id);
         Task<UserPersonalResponseDto> GetUserPersonalInfo();
+        Task<UserPersonalResponseDto> UpdateUser(UserUpdatedRequestDto request);
     }
 }

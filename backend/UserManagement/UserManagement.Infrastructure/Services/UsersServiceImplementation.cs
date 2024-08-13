@@ -119,5 +119,29 @@ namespace UserManagement.Infrastructure.Services
 
             return _mapper.Map<UserPersonalResponseDto>(user);
         }
+
+        public async Task<UserPersonalResponseDto> UpdateUser(UserUpdatedRequestDto request)
+        {
+            var jwt = _httpContextAccessor.HttpContext?.Request.Headers.Authorization.ToString().Split("Bearer ", StringSplitOptions.RemoveEmptyEntries)[0];
+            if (string.IsNullOrEmpty(jwt))
+            {
+                throw new UnauthorizedException();
+            }
+
+            var claims = JwtHelper.GetClaims(jwt);
+            var id = int.Parse(claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?.Value ?? string.Empty);
+
+            var user = await _unitOfWork.UsersRepository.GetByIdAsync(id);
+            if (user == null)
+            {
+                throw new NotFoundException(ExceptionMessage.UserNotFound);
+            }
+
+            user = _mapper.Map(request, user);
+            _unitOfWork.UsersRepository.Update(user);
+            await _unitOfWork.SaveAsync();
+
+            return _mapper.Map<UserPersonalResponseDto>(user);
+        }
     }
 }
