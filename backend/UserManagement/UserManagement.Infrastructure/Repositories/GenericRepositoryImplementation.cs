@@ -8,8 +8,8 @@ namespace UserManagement.Infrastructure.Repositories
 {
     public class GenericRepositoryImplementation<T> : GenericRepository<T> where T : BaseEntity
     {
-        private ApplicationContext _context;
-        private DbSet<T> _dbSet;
+        protected readonly ApplicationContext _context;
+        protected readonly DbSet<T> _dbSet;
         public GenericRepositoryImplementation(ApplicationContext dbContext)
         {
             this._context = dbContext;
