@@ -56,5 +56,12 @@ namespace UserManagement.API.Controllers
         {
             return await _usersService.UpdateUser(request);
         }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task DeleteUser()
+        {
+            await _usersService.DeleteUser();
+        }
     }
 }

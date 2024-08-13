@@ -11,5 +11,6 @@ namespace UserManagement.Application.Services
         Task<UserResponseDto> GetUser(int id);
         Task<UserPersonalResponseDto> GetUserPersonalInfo();
         Task<UserPersonalResponseDto> UpdateUser(UserUpdatedRequestDto request);
+        Task DeleteUser();
     }
 }

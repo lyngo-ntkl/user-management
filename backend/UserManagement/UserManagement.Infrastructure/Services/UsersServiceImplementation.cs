@@ -102,25 +102,30 @@ namespace UserManagement.Infrastructure.Services
 
         public async Task<UserPersonalResponseDto> GetUserPersonalInfo()
         {
-            var jwt = _httpContextAccessor.HttpContext?.Request.Headers.Authorization.ToString().Split("Bearer ", StringSplitOptions.RemoveEmptyEntries)[0];
-            if (string.IsNullOrEmpty(jwt))
-            {
-                throw new UnauthorizedException();
-            }
-
-            var claims = JwtHelper.GetClaims(jwt);
-            var id = int.Parse(claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?.Value ?? string.Empty);
-
-            var user = await _unitOfWork.UsersRepository.GetByIdAsync(id);
-            if (user == null)
-            {
-                throw new NotFoundException(ExceptionMessage.UserNotFound);
-            }
+            User user = await GetLoginUser();
 
             return _mapper.Map<UserPersonalResponseDto>(user);
         }
 
         public async Task<UserPersonalResponseDto> UpdateUser(UserUpdatedRequestDto request)
+        {
+            User user = await GetLoginUser();
+
+            user = _mapper.Map(request, user);
+            _unitOfWork.UsersRepository.Update(user);
+            await _unitOfWork.SaveAsync();
+
+            return _mapper.Map<UserPersonalResponseDto>(user);
+        }
+
+        public async Task DeleteUser()
+        {
+            User user = await GetLoginUser();
+            _unitOfWork.UsersRepository.Delete(user);
+            await _unitOfWork.SaveAsync();
+        }
+
+        private async Task<User> GetLoginUser()
         {
             var jwt = _httpContextAccessor.HttpContext?.Request.Headers.Authorization.ToString().Split("Bearer ", StringSplitOptions.RemoveEmptyEntries)[0];
             if (string.IsNullOrEmpty(jwt))
@@ -136,12 +141,7 @@ namespace UserManagement.Infrastructure.Services
             {
                 throw new NotFoundException(ExceptionMessage.UserNotFound);
             }
-
-            user = _mapper.Map(request, user);
-            _unitOfWork.UsersRepository.Update(user);
-            await _unitOfWork.SaveAsync();
-
-            return _mapper.Map<UserPersonalResponseDto>(user);
+            return user;
         }
     }
 }
