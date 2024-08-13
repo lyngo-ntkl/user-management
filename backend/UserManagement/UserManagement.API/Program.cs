@@ -6,8 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration["connectionStrings:database"]);
-builder.Services.AddAPI();
+builder.Services.AddInfrastructure(builder.Configuration["connectionStrings:database"]!);
+builder.Services.AddAPI(builder.Configuration);
 
 var app = builder.Build();
 
@@ -16,6 +16,8 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 
 app.UseExceptionHandler();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

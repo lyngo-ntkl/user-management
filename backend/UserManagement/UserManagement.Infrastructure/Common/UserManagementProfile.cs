@@ -15,6 +15,8 @@ namespace UserManagement.Infrastructure.Common
                 .ForAllMembers(config => config.Condition((src, dest, val) => val != null));
             CreateMap<User, UserResponseDto>()
                 .ForAllMembers(config => config.Condition((src, dest, val) => val != null));
+            CreateMap<User, UserPersonalResponseDto>()
+                .ForAllMembers(config => config.Condition((src, dest, val) => val != null));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using UserManagement.Application.Dtos.Requests;
 using UserManagement.Application.Dtos.Responses;
 using UserManagement.Application.Services;
@@ -38,6 +39,13 @@ namespace UserManagement.API.Controllers
         public async Task<UserResponseDto> GetUser([FromRoute] int id)
         {
             return await _usersService.GetUser(id);
+        }
+
+        [HttpGet("personal")]
+        [Authorize]
+        public async Task<UserPersonalResponseDto> GetUserPersonalInfo()
+        {
+            return await _usersService.GetUserPersonalInfo();
         }
     }
 }

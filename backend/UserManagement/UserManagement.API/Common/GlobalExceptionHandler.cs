@@ -32,6 +32,11 @@ namespace UserManagement.API.Common
                 problemDetails.Status = StatusCodes.Status404NotFound;
                 problemDetails.Title = "Not found";
             }
+            else if (exception is UnauthorizedException)
+            {
+                problemDetails.Status = StatusCodes.Status401Unauthorized;
+                problemDetails.Title = "Unauthorized";
+            }
             else
             {
                 problemDetails.Status = StatusCodes.Status500InternalServerError;

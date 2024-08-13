@@ -8,6 +8,8 @@ using UserManagement.Application.Services;
 using UserManagement.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using UserManagement.Application.Exceptions;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace UserManagement.Infrastructure.Services
 {
@@ -16,12 +18,14 @@ namespace UserManagement.Infrastructure.Services
         private readonly UnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UsersServiceImplementation(UnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration)
+        public UsersServiceImplementation(UnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<AuthenticationResponseDto> Login(AuthenticationRequestDto request)
@@ -38,11 +42,11 @@ namespace UserManagement.Infrastructure.Services
                 throw new BadRequestException(ExceptionMessage.WrongPassword);
             }
 
-            var token = JwtHelper.GenerateAccessToken(user, _configuration["key"]);
+            var token = JwtHelper.GenerateAccessToken(user, _configuration["key"]!);
 
             return new AuthenticationResponseDto
             {
-                Token = token
+                AccessToken = token
             };
         }
 
@@ -94,6 +98,26 @@ namespace UserManagement.Infrastructure.Services
                 throw new NotFoundException(ExceptionMessage.UserNotFound);
             }
             return _mapper.Map<UserResponseDto>(user);
+        }
+
+        public async Task<UserPersonalResponseDto> GetUserPersonalInfo()
+        {
+            var jwt = _httpContextAccessor.HttpContext?.Request.Headers.Authorization.ToString().Split("Bearer ", StringSplitOptions.RemoveEmptyEntries)[0];
+            if (string.IsNullOrEmpty(jwt))
+            {
+                throw new UnauthorizedException();
+            }
+
+            var claims = JwtHelper.GetClaims(jwt);
+            var id = int.Parse(claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?.Value ?? string.Empty);
+
+            var user = await _unitOfWork.UsersRepository.GetByIdAsync(id);
+            if (user == null)
+            {
+                throw new NotFoundException(ExceptionMessage.UserNotFound);
+            }
+
+            return _mapper.Map<UserPersonalResponseDto>(user);
         }
     }
 }
