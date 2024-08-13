@@ -6,7 +6,7 @@ using UserManagement.Application.Repositories;
 using UserManagement.Application.Services;
 using UserManagement.Domain.Entities;
 using Microsoft.Extensions.Configuration;
-using System.Text;
+using UserManagement.Application.Exceptions;
 
 namespace UserManagement.Infrastructure.Services
 {
@@ -28,14 +28,13 @@ namespace UserManagement.Infrastructure.Services
             var user = await _unitOfWork.UsersRepository.GetByEmailAsync(request.Email);
             if (user == null)
             {
-                throw new Exception("Email hasn't been registered");
-                // TODO: Global exception handler
+                throw new BadRequestException(ExceptionMessage.UnregisteredEmail);
             }
 
             HashingHelper.Hash(request.Password, user.PasswordSalt, out string hash);
             if (hash != user.PasswordHash)
             {
-                throw new Exception("Wrong password");
+                throw new BadRequestException(ExceptionMessage.WrongPassword);
             }
 
             var token = JwtHelper.GenerateAccessToken(user, _configuration["key"]);
@@ -50,7 +49,7 @@ namespace UserManagement.Infrastructure.Services
         {
             if (_unitOfWork.UsersRepository.ExistByEmail(request.Email))
             {
-                throw new Exception("Email has been registered");
+                throw new BadRequestException(ExceptionMessage.RegisteredEmail);
             }
 
             var user = _mapper.Map<User>(request);

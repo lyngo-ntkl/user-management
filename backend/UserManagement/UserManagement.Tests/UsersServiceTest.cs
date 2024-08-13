@@ -4,10 +4,11 @@ using Moq;
 using NUnit.Framework;
 using System.Text;
 using UserManagement.Application.Dtos.Requests;
+using UserManagement.Application.Exceptions;
 using UserManagement.Application.Repositories;
 using UserManagement.Application.Services;
 using UserManagement.Domain.Entities;
-using UserManagement.Infrastructure.Configurations;
+using UserManagement.Infrastructure.Common;
 using UserManagement.Infrastructure.Services;
 
 namespace UserManagement.Tests
@@ -54,13 +55,13 @@ namespace UserManagement.Tests
                 UserName = "user",
             };
 
-            var exception = Assert.ThrowsAsync<Exception>(async delegate {
+            var exception = Assert.ThrowsAsync<BadRequestException>(async delegate {
                 await _usersService!.Register(request);
             });
 
             Assert.That(exception, Is.Not.Null);
-            Assert.That(exception, Is.TypeOf<Exception>());
-            Assert.That(exception.Message, Is.EqualTo("Email has been registered"));
+            Assert.That(exception, Is.TypeOf<BadRequestException>());
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessage.RegisteredEmail));
         }
 
         [Test]
@@ -88,14 +89,14 @@ namespace UserManagement.Tests
                 Password = "Helloworld12345!!"
             };
 
-            var exception = Assert.ThrowsAsync<Exception>(async delegate
+            var exception = Assert.ThrowsAsync<BadRequestException>(async delegate
             {
                 await _usersService!.Login(request);
             });
 
             Assert.That(exception, Is.Not.Null);
-            Assert.That(exception, Is.TypeOf<Exception>());
-            Assert.That(exception.Message, Is.EqualTo("Email hasn't been registered"));
+            Assert.That(exception, Is.TypeOf<BadRequestException>());
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessage.UnregisteredEmail));
         }
 
         [Test]
@@ -107,14 +108,14 @@ namespace UserManagement.Tests
                 Password = "Helloworld12346!!"
             };
 
-            var exception = Assert.ThrowsAsync<Exception>(async delegate
+            var exception = Assert.ThrowsAsync<BadRequestException>(async delegate
             {
                 await _usersService!.Login(request);
             });
 
             Assert.That(exception, Is.Not.Null);
-            Assert.That(exception, Is.TypeOf<Exception>());
-            Assert.That(exception.Message, Is.EqualTo("Wrong password"));
+            Assert.That(exception, Is.TypeOf<BadRequestException>());
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessage.WrongPassword));
         }
 
         [Test]
