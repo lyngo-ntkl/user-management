@@ -27,6 +27,11 @@ namespace UserManagement.API.Common
                 problemDetails.Status = StatusCodes.Status400BadRequest;
                 problemDetails.Title = "Bad request";
             }
+            else if (exception is NotFoundException)
+            {
+                problemDetails.Status = StatusCodes.Status404NotFound;
+                problemDetails.Title = "Not found";
+            }
             else
             {
                 problemDetails.Status = StatusCodes.Status500InternalServerError;

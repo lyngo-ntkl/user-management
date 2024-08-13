@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Moq;
 using NUnit.Framework;
-using System.Text;
 using UserManagement.Application.Dtos.Requests;
 using UserManagement.Application.Exceptions;
 using UserManagement.Application.Repositories;
@@ -76,7 +75,7 @@ namespace UserManagement.Tests
 
             Assert.DoesNotThrowAsync(async () =>
             {
-                await _usersService.Register(request);
+                await _usersService!.Register(request);
             });
         }
 

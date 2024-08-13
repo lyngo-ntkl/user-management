@@ -85,5 +85,15 @@ namespace UserManagement.Infrastructure.Services
             await _unitOfWork.UsersRepository.InsertAsync(user);
             await _unitOfWork.SaveAsync();
         }
+
+        public async Task<UserResponseDto> GetUser(int id)
+        {
+            var user = await _unitOfWork.UsersRepository.GetByIdAsync(id);
+            if (user == null)
+            {
+                throw new NotFoundException(ExceptionMessage.UserNotFound);
+            }
+            return _mapper.Map<UserResponseDto>(user);
+        }
     }
 }

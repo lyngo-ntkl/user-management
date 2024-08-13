@@ -17,7 +17,7 @@ namespace UserManagement.API.Controllers
         }
 
         [HttpPost("registration")]
-        public async Task Register(UserRegistrationRequestDto request)
+        public async Task Register([FromBody] UserRegistrationRequestDto request)
         {
             await _usersService.Register(request);
         }
@@ -29,9 +29,15 @@ namespace UserManagement.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<AuthenticationResponseDto> Login(AuthenticationRequestDto request)
+        public async Task<AuthenticationResponseDto> Login([FromBody] AuthenticationRequestDto request)
         {
             return await _usersService.Login(request);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<UserResponseDto> GetUser([FromRoute] int id)
+        {
+            return await _usersService.GetUser(id);
         }
     }
 }
