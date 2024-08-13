@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserManagement.Application.Dtos.Requests;
+using UserManagement.Application.Dtos.Responses;
 using UserManagement.Application.Services;
 
 namespace UserManagement.API.Controllers
@@ -19,6 +20,12 @@ namespace UserManagement.API.Controllers
         public async Task Register(UserRegistrationRequestDto request)
         {
             await _usersService.Register(request);
+        }
+
+        [HttpPost("login")]
+        public async Task<AuthenticationResponseDto> Login(AuthenticationRequestDto request)
+        {
+            return await _usersService.Login(request);
         }
     }
 }

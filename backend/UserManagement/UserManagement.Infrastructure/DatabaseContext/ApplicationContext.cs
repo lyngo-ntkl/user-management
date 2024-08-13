@@ -15,6 +15,8 @@ namespace UserManagement.Infrastructure.DatabaseContext
         {
             modelBuilder.Entity<User>(options =>
             {
+                options.HasIndex(user => user.Email)
+                    .IsUnique();
                 options.Property(user => user.UserName)
                     .HasMaxLength(500)
                     .IsUnicode(true);

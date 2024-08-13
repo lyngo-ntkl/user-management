@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
-using System.Security.Cryptography;
-using System.Text;
+using UserManagement.Infrastructure.Common;
 using UserManagement.Application.Dtos.Requests;
+using UserManagement.Application.Dtos.Responses;
 using UserManagement.Application.Repositories;
 using UserManagement.Application.Services;
 using UserManagement.Domain.Entities;
+using Microsoft.Extensions.Configuration;
+using System.Text;
 
 namespace UserManagement.Infrastructure.Services
 {
@@ -12,49 +14,52 @@ namespace UserManagement.Infrastructure.Services
     {
         private readonly UnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-        public UsersServiceImplementation(UnitOfWork unitOfWork, IMapper mapper)
+        public UsersServiceImplementation(UnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _configuration = configuration;
+        }
+
+        public async Task<AuthenticationResponseDto> Login(AuthenticationRequestDto request)
+        {
+            var user = await _unitOfWork.UsersRepository.GetByEmailAsync(request.Email);
+            if (user == null)
+            {
+                throw new Exception("Email hasn't been registered");
+                // TODO: Global exception handler
+            }
+
+            HashingHelper.Hash(request.Password, user.PasswordSalt, out string hash);
+            if (hash != user.PasswordHash)
+            {
+                throw new Exception("Wrong password");
+            }
+
+            var token = JwtHelper.GenerateAccessToken(user, _configuration["key"]);
+
+            return new AuthenticationResponseDto
+            {
+                Token = token
+            };
         }
 
         public async Task Register(UserRegistrationRequestDto request)
         {
-            var user = _unitOfWork.UsersRepository.Get().FirstOrDefault(u => u.Email == request.Email);
-            if (user != null)
+            if (_unitOfWork.UsersRepository.ExistByEmail(request.Email))
             {
                 throw new Exception("Email has been registered");
             }
 
-            user = _mapper.Map<User>(request);
-            HashingHelper.Hash(request.Password, out byte[] hash, out byte[] salt);
+            var user = _mapper.Map<User>(request);
+            HashingHelper.Hash(request.Password, out string hash, out string salt);
             user.PasswordHash = hash;
             user.PasswordSalt = salt;
-
+            
             await _unitOfWork.UsersRepository.InsertAsync(user);
             await _unitOfWork.SaveAsync();
-        }
-    }
-
-    public class HashingHelper
-    {
-        private const int SaltBytes = 16;
-        private const int HashBytes = 32;
-        private const int Iteration = 10000;
-        private static HashAlgorithmName Algorithm = HashAlgorithmName.SHA512;
-        public static void Hash(string value, out byte[] hash, out byte[] salt)
-        {
-            salt = RandomNumberGenerator.GetBytes(SaltBytes);
-            var pbkdf2 = new Rfc2898DeriveBytes(value, salt, Iteration, Algorithm);
-            var hashBytes = pbkdf2.GetBytes(HashBytes);
-            hash = hashBytes;
-        }
-
-        public static void Hash(string value, byte[] salt, out byte[] hash)
-        {
-            var pbkdf2 = new Rfc2898DeriveBytes(value, salt, Iteration, Algorithm);
-            hash = pbkdf2.GetBytes(HashBytes);
         }
     }
 }
