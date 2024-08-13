@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Text;
 using UserManagement.Application.Dtos.Requests;
+using UserManagement.Application.Dtos.Responses;
 using UserManagement.Application.Repositories;
 using UserManagement.Application.Services;
 using UserManagement.Domain.Entities;
@@ -17,6 +19,29 @@ namespace UserManagement.Infrastructure.Services
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+        }
+
+        public async Task<List<UserResponseDto>> GetUsers(string? userName)
+        {
+            Expression expression = Expression.Constant(true);
+
+            if (userName != null)
+            {
+                expression = Expression.And(
+                    expression,
+                    Expression.Call(
+                        Expression.Call(
+                            Expression.Property(Expression.Parameter(typeof(User)), nameof(User.UserName)),
+                            typeof(string).GetMethod("ToLower", Type.EmptyTypes) ?? throw new InvalidOperationException("string.ToLower not found")
+                        ),
+                        typeof(string).GetMethod("Contains", new[] { typeof(string) }) ?? throw new InvalidOperationException("string.Contains not found"),
+                        Expression.Constant(userName.Trim().ToLower())
+                    )
+                );
+            }
+
+            var users = await _unitOfWork.UsersRepository.GetAsync(Expression.Lambda<Func<User,bool>>(expression));
+            return _mapper.Map<List<UserResponseDto>>(users);
         }
 
         public async Task Register(UserRegistrationRequestDto request)
