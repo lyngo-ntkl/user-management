@@ -5,7 +5,10 @@ namespace UserManagement.Application.Services
 {
     public interface UsersService
     {
-        public Task Register(UserRegistrationRequestDto request);
-        public Task<AuthenticationResponseDto> Login(AuthenticationRequestDto request);
+        Task Register(UserRegistrationRequestDto request);
+        Task<List<UserResponseDto>> GetUsers(string? userName);
+        Task<AuthenticationResponseDto> Login(AuthenticationRequestDto request);
+        Task<UserResponseDto> GetUser(int id);
+        Task<UserPersonalResponseDto> GetUserPersonalInfo();
     }
 }

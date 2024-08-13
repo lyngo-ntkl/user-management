@@ -34,5 +34,12 @@ namespace UserManagement.Infrastructure.Common
             string accessToken = tokenHandler.WriteToken(token);
             return accessToken;
         }
+
+        public static IEnumerable<Claim> GetClaims(string jwt)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.ReadJwtToken(jwt);
+            return token.Claims;
+        }
     }
 }

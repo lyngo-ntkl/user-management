@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using NUnit.Framework;
-using System.Text;
 using UserManagement.Application.Dtos.Requests;
 using UserManagement.Application.Exceptions;
 using UserManagement.Application.Repositories;
@@ -19,6 +19,7 @@ namespace UserManagement.Tests
         private Mock<UnitOfWork>? _unitOfWork;
         private IMapper? _mapper;
         private Mock<IConfiguration> _configuration;
+        private Mock<IHttpContextAccessor> _httpContextAccessor;
         private UsersService? _usersService;
         [SetUp]
         public void Init()
@@ -26,7 +27,8 @@ namespace UserManagement.Tests
             _unitOfWork = new Mock<UnitOfWork>();
             _mapper = (new MapperConfiguration(config => config.AddProfile<UserManagementProfile>())).CreateMapper();
             _configuration = new Mock<IConfiguration>();
-            _usersService = new UsersServiceImplementation(_unitOfWork.Object, _mapper, _configuration.Object);
+            _httpContextAccessor = new Mock<IHttpContextAccessor>();
+            _usersService = new UsersServiceImplementation(_unitOfWork.Object, _mapper, _configuration.Object, _httpContextAccessor.Object);
 
             _configuration.Setup(c => c["key"]).Returns("eyJhbGciOiJIUzUxMiJ9.ew0KICAic3ViIjogIjEyMzQ1Njc4OTAiLA0KICAibmFtZSI6ICJBbmlzaCBOYXRoIiwNCiAgImlhdCI6IDE1MTYyMzkwMjINCn0.0lAo-7g558HEbUzGjAZj6ZU4-lQ0t2W3fgkYf04RoxMb_YtO8Fh5ox3CPkGFy6N08EH4OEh9Dsjm2uS_QWZ96g");
 
@@ -76,7 +78,7 @@ namespace UserManagement.Tests
 
             Assert.DoesNotThrowAsync(async () =>
             {
-                await _usersService.Register(request);
+                await _usersService!.Register(request);
             });
         }
 
@@ -130,7 +132,7 @@ namespace UserManagement.Tests
             var authToken = await _usersService!.Login(request);
 
             Assert.That(authToken, Is.Not.Null);
-            Assert.That(authToken.Token, Is.Not.Empty);
+            Assert.That(authToken.AccessToken, Is.Not.Empty);
         }
     }
 }

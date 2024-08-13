@@ -23,6 +23,8 @@ namespace UserManagement.Infrastructure
                 config.AddProfile<UserManagementProfile>();
             });
 
+            services.AddHttpContextAccessor();
+
             services.AddScoped<UnitOfWork, UnitOfWorkImplementation>();
             services.AddScoped<UsersRepository, UsersRepositoryImplementation>();
 
