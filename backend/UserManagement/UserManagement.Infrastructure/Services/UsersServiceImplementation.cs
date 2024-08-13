@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using UserManagement.Application.Exceptions;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using UserManagement.Application.Common;
 
 namespace UserManagement.Infrastructure.Services
 {
